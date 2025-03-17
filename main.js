@@ -270,17 +270,26 @@ class Tango {
         this.cells[y][x].dataset.ok = ok;
     }
 
+    throwConfetti(backoff = 10) {
+        if (!this.confetti) return;
+        if (window.confetti) {
+            confetti({
+                particleCount: 100,
+                startVelocity: 15,
+                spread: 360,
+                origin: { y: 0.5 },
+            });
+        } else {
+            setTimeout(() => {
+                this.throwConfetti(Math.min(backoff * 2, 1000));
+            }, backoff);
+        }
+    }
+
     hint() {
         if (this.isSolved()) {
             document.body.dataset.state = "solved";
-            if (this.confetti) {
-                confetti({
-                    particleCount: 100,
-                    startVelocity: 15,
-                    spread: 360,
-                    origin: { y: 0.5 },
-                });
-            }
+            this.throwConfetti();
         } else {
             document.body.dataset.state = "playing";
         }
