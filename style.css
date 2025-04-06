@@ -9,44 +9,10 @@ body {
 }
 
 body[data-status="solved"] {
-    /* Base color */
+    background-color: #d7e6ff;
     position: relative;
     overflow: hidden;
 }
-
-@keyframes expandCircle {
-    0% {
-        transform: scale(1);
-    }
-
-    100% {
-        transform: scale(4);
-    }
-}
-
-body[data-status="solved"]::after {
-    content: '';
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    background: radial-gradient(circle,
-            #ffb31e 4.375%,
-            #82afed 6.25%,
-            #82afed 8.75%,
-            #ffb31e 12.5%,
-            #ffb31e 17.5%,
-            #82afed 25%,
-            #82afed 35%,
-            #ffb31e 50%,
-            #ffb31e 70%,
-            #82afed 100%);
-    z-index: -1;
-    animation: expandCircle 0.5s linear 3;
-    opacity: 0.2;
-}
-
 
 button {
     font-family: monospace;
