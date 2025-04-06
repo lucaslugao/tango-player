@@ -25,37 +25,512 @@
     <link rel="manifest" href="manifest.json">
 </head>
 
-<body>
+<body data-confetti="true">
     <div class="game">
         <p class="title">Tango Player</p>
         <p class="myname">by @lucaslugao</p>
         <p class="notice">Solved!</p>
         <div class="controls">
             <button class="button undo">Undo</button>
-            <button class="button clear-board">Clear</button>
+            <button class="button clear">Clear</button>
             <button class="button redo">Redo</button>
-            <button class="button confetti outline">Confetti On</button>
+            <button class="button confetti">Confetti</button>
         </div>
-        <svg version="1.1" width="362" height="362" viewBox="-1 -1 362 362">
+        <svg version="1.1" width="362" height="362" viewBox="-1 -1 362 362" data-cell-size="60">
+            <style>
+                :root {
+                    --cell-color: #eff0f3;
+                    --sun-color: #ffb31e;
+                    --sun-stroke: #a37415;
+                    --moon-color: #82afed;
+                    --moon-stroke: #4d75ad;
+                    --symbol-color: #4c658c;
+                    --symbolbg-color: white;
+                }
+
+                .cell {
+                    fill: white;
+                    stroke: var(--cell-color);
+                }
+
+                use {
+                    visibility: hidden;
+                }
+
+                .cg[data-original="1"] .cell {
+                    fill: var(--cell-color);
+                }
+
+                .cg[data-ok="1"][data-value="1"] use[href="#sun"] {
+                    visibility: visible;
+                }
+
+                .cg[data-ok="1"][data-value="0"] use[href="#moon"] {
+                    visibility: visible;
+                }
+
+                .sg[data-ok="1"][data-value="0"] use[href="#eq"],
+                .sg[data-ok="1"][data-value="0"] use[href="#veq"] {
+                    visibility: visible;
+                }
+
+                .sg[data-ok="1"][data-value="1"] use[href="#cross"] {
+                    visibility: visible;
+                }
+            </style>
             <defs>
-                <symbol id="sun" viewBox="-1 -1 3 3">
-                    <circle fill="#ffb31e" stroke="black" stroke-width="0.05" cx="0.5" cy="0.5" r="0.5"></circle>
+                <symbol id="sun" viewBox="0 0 60 60">
+                    <circle cx="30" cy="30" r="14" fill="var(--sun-color)" stroke="var(--sun-stroke)"
+                        stroke-width="2" />
                 </symbol>
-                <symbol id="moon" viewBox="-1 -1 3 3">
-                    <path fill="#82afed" stroke="black" stroke-width="0.05"
-                        d="m 0.7056 0.0444 a 0.5 0.5 90 0 1 0.0444 0.2056 a 0.5 0.5 90 0 1 -0.5 0.5 a 0.5 0.5 90 0 1 -0.2056 -0.0444 a 0.5 0.5 90 0 0 0.4556 0.2944 a 0.5 0.5 90 0 0 0.5 -0.5 a 0.5 0.5 90 0 0 -0.2944 -0.4556 z">
+                <symbol id="moon" viewBox="0 0 60 60">
+                    <path
+                        d="m 35.7568 17.2432 a 14 14 90 0 1 1.2432 5.7568 a 14 14 90 0 1 -14 14 a 14 14 90 0 1 -5.7568 -1.2432 a 14 14 90 0 0 12.7568 8.2432 a 14 14 90 0 0 14 -14 a 14 14 90 0 0 -8.2432 -12.7568 z"
+                        stroke-width="2" fill="var(--moon-color)" stroke="var(--moon-stroke)" />
+                </symbol>
+                <symbol id="eq" width="60" height="60" viewBox="0 0 60 60">
+                    <path fill="var(--symbol-color)" stroke-linecap="round" paint-order="stroke" stroke="white"
+                        stroke-width="2" d="m 25.8 27.2 l 8.4 0 l 0 1.4 l -8.4 0 z m 0 4.2 l 8.4 0 l 0 1.4 l -8.4 0 z">
                     </path>
                 </symbol>
-                <symbol id="equal" viewBox="-1 -1 3 3">
-                    <path fill="black" stroke="#fff" stroke-width="0.1" stroke-linecap="round" paint-order="stroke"
-                        d="m 0.2 0.3 l 0.6 0 l 0 0.1 l -0.6 0 z m 0 0.3 l 0.6 0 l 0 0.1 l -0.6 0 z"></path>
+                <symbol id="veq" width="60" height="60" viewBox="0 0 60 60">
+                    <path fill="var(--symbol-color)" stroke-linecap="round" paint-order="stroke" stroke="white"
+                        stroke-width="2"
+                        d="m 32.8 25.8 l 0 8.4 l -1.4 0 l -0 -8.4 z m -4.2 0 l 0 8.4 l -1.4 0 l -0 -8.4 z">
+                    </path>
                 </symbol>
-                <symbol id="cross" viewBox="-1 -1 3 3">
-                    <path fill="black" stroke="#fff" stroke-width="0.1" stroke-linecap="round" paint-order="stroke"
-                        d="m 0.3232 0.2525 l 0.4243 0.4243 l -0.0707 0.0707 l -0.4243 -0.4243 z m -0.0707 0.4243 l 0.4243 -0.4243 l 0.0707 0.0707 l -0.4243 0.4243 z">
+                <symbol id="cross" width="60" height="60" viewBox="0 0 60 60">
+                    <path fill="var(--symbol-color)" stroke-linecap="round" paint-order="stroke" stroke="white"
+                        stroke-width="2"
+                        d="m 27.5248 26.535 l 5.9402 5.9402 l -0.9898 0.9898 l -5.9402 -5.9402 z m -0.9898 5.9402 l 5.9402 -5.9402 l 0.9898 0.9898 l -5.9402 5.9402 z">
                     </path>
                 </symbol>
             </defs>
+            <!-- begin board -->
+            <!-- This was baked by ./bake.mjs -->
+            <g class="board">
+                <g class="cg" data-id="00">
+                    <path class="cell" d="M 4,0 l 56,0 l 0,60 l -60,0 l 0,-56 a 4,4 0 0 1 4,-4 z" />
+                    <use x="0" y="0" width="60" height="60" href="#sun" />
+                    <use x="0" y="0" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="10">
+                    <path class="cell" d="M 60,0 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="60" y="0" width="60" height="60" href="#sun" />
+                    <use x="60" y="0" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="20">
+                    <path class="cell" d="M 120,0 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="120" y="0" width="60" height="60" href="#sun" />
+                    <use x="120" y="0" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="30">
+                    <path class="cell" d="M 180,0 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="180" y="0" width="60" height="60" href="#sun" />
+                    <use x="180" y="0" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="40">
+                    <path class="cell" d="M 240,0 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="240" y="0" width="60" height="60" href="#sun" />
+                    <use x="240" y="0" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="50">
+                    <path class="cell" d="M 300,0 l 56,0 a 4,4 0 0 1 4,4 l 0,56 l -60,0 l 0,-60 z" />
+                    <use x="300" y="0" width="60" height="60" href="#sun" />
+                    <use x="300" y="0" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="01">
+                    <path class="cell" d="M 0,60 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="0" y="60" width="60" height="60" href="#sun" />
+                    <use x="0" y="60" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="11">
+                    <rect x="60" y="60" width="60" height="60" class="cell" />
+                    <use x="60" y="60" width="60" height="60" href="#sun" />
+                    <use x="60" y="60" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="21">
+                    <rect x="120" y="60" width="60" height="60" class="cell" />
+                    <use x="120" y="60" width="60" height="60" href="#sun" />
+                    <use x="120" y="60" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="31">
+                    <rect x="180" y="60" width="60" height="60" class="cell" />
+                    <use x="180" y="60" width="60" height="60" href="#sun" />
+                    <use x="180" y="60" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="41">
+                    <rect x="240" y="60" width="60" height="60" class="cell" />
+                    <use x="240" y="60" width="60" height="60" href="#sun" />
+                    <use x="240" y="60" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="51">
+                    <path class="cell" d="M 300,60 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="300" y="60" width="60" height="60" href="#sun" />
+                    <use x="300" y="60" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="02">
+                    <path class="cell" d="M 0,120 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="0" y="120" width="60" height="60" href="#sun" />
+                    <use x="0" y="120" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="12">
+                    <rect x="60" y="120" width="60" height="60" class="cell" />
+                    <use x="60" y="120" width="60" height="60" href="#sun" />
+                    <use x="60" y="120" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="22">
+                    <rect x="120" y="120" width="60" height="60" class="cell" />
+                    <use x="120" y="120" width="60" height="60" href="#sun" />
+                    <use x="120" y="120" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="32">
+                    <rect x="180" y="120" width="60" height="60" class="cell" />
+                    <use x="180" y="120" width="60" height="60" href="#sun" />
+                    <use x="180" y="120" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="42">
+                    <rect x="240" y="120" width="60" height="60" class="cell" />
+                    <use x="240" y="120" width="60" height="60" href="#sun" />
+                    <use x="240" y="120" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="52">
+                    <path class="cell" d="M 300,120 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="300" y="120" width="60" height="60" href="#sun" />
+                    <use x="300" y="120" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="03">
+                    <path class="cell" d="M 0,180 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="0" y="180" width="60" height="60" href="#sun" />
+                    <use x="0" y="180" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="13">
+                    <rect x="60" y="180" width="60" height="60" class="cell" />
+                    <use x="60" y="180" width="60" height="60" href="#sun" />
+                    <use x="60" y="180" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="23">
+                    <rect x="120" y="180" width="60" height="60" class="cell" />
+                    <use x="120" y="180" width="60" height="60" href="#sun" />
+                    <use x="120" y="180" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="33">
+                    <rect x="180" y="180" width="60" height="60" class="cell" />
+                    <use x="180" y="180" width="60" height="60" href="#sun" />
+                    <use x="180" y="180" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="43">
+                    <rect x="240" y="180" width="60" height="60" class="cell" />
+                    <use x="240" y="180" width="60" height="60" href="#sun" />
+                    <use x="240" y="180" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="53">
+                    <path class="cell" d="M 300,180 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="300" y="180" width="60" height="60" href="#sun" />
+                    <use x="300" y="180" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="04">
+                    <path class="cell" d="M 0,240 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="0" y="240" width="60" height="60" href="#sun" />
+                    <use x="0" y="240" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="14">
+                    <rect x="60" y="240" width="60" height="60" class="cell" />
+                    <use x="60" y="240" width="60" height="60" href="#sun" />
+                    <use x="60" y="240" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="24">
+                    <rect x="120" y="240" width="60" height="60" class="cell" />
+                    <use x="120" y="240" width="60" height="60" href="#sun" />
+                    <use x="120" y="240" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="34">
+                    <rect x="180" y="240" width="60" height="60" class="cell" />
+                    <use x="180" y="240" width="60" height="60" href="#sun" />
+                    <use x="180" y="240" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="44">
+                    <rect x="240" y="240" width="60" height="60" class="cell" />
+                    <use x="240" y="240" width="60" height="60" href="#sun" />
+                    <use x="240" y="240" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="54">
+                    <path class="cell" d="M 300,240 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="300" y="240" width="60" height="60" href="#sun" />
+                    <use x="300" y="240" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="05">
+                    <path class="cell" d="M 0,300 l 60,0 l 0,60 l -56,0 a 4,4 0 0 1 -4,-4 l 0,-56 z" />
+                    <use x="0" y="300" width="60" height="60" href="#sun" />
+                    <use x="0" y="300" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="15">
+                    <path class="cell" d="M 60,300 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="60" y="300" width="60" height="60" href="#sun" />
+                    <use x="60" y="300" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="25">
+                    <path class="cell" d="M 120,300 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="120" y="300" width="60" height="60" href="#sun" />
+                    <use x="120" y="300" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="35">
+                    <path class="cell" d="M 180,300 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="180" y="300" width="60" height="60" href="#sun" />
+                    <use x="180" y="300" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="45">
+                    <path class="cell" d="M 240,300 l 60,0 l 0,60 l -60,0 l 0,-60 z" />
+                    <use x="240" y="300" width="60" height="60" href="#sun" />
+                    <use x="240" y="300" width="60" height="60" href="#moon" />
+                </g>
+                <g class="cg" data-id="55">
+                    <path class="cell" d="M 300,300 l 60,0 l 0,56 a 4,4 0 0 1 -4,4 l -56,0 l 0,-60 z" />
+                    <use x="300" y="300" width="60" height="60" href="#sun" />
+                    <use x="300" y="300" width="60" height="60" href="#moon" />
+                </g>
+                <g class="sg" data-id="r00">
+                    <use x="30" y="0" width="60" height="60" href="#eq" />
+                    <use x="30" y="0" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c00">
+                    <use x="0" y="30" width="60" height="60" href="#veq" />
+                    <use x="0" y="30" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r10">
+                    <use x="90" y="0" width="60" height="60" href="#eq" />
+                    <use x="90" y="0" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c10">
+                    <use x="0" y="90" width="60" height="60" href="#veq" />
+                    <use x="0" y="90" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r20">
+                    <use x="150" y="0" width="60" height="60" href="#eq" />
+                    <use x="150" y="0" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c20">
+                    <use x="0" y="150" width="60" height="60" href="#veq" />
+                    <use x="0" y="150" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r30">
+                    <use x="210" y="0" width="60" height="60" href="#eq" />
+                    <use x="210" y="0" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c30">
+                    <use x="0" y="210" width="60" height="60" href="#veq" />
+                    <use x="0" y="210" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r40">
+                    <use x="270" y="0" width="60" height="60" href="#eq" />
+                    <use x="270" y="0" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c40">
+                    <use x="0" y="270" width="60" height="60" href="#veq" />
+                    <use x="0" y="270" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r01">
+                    <use x="30" y="60" width="60" height="60" href="#eq" />
+                    <use x="30" y="60" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c01">
+                    <use x="60" y="30" width="60" height="60" href="#veq" />
+                    <use x="60" y="30" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r11">
+                    <use x="90" y="60" width="60" height="60" href="#eq" />
+                    <use x="90" y="60" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c11">
+                    <use x="60" y="90" width="60" height="60" href="#veq" />
+                    <use x="60" y="90" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r21">
+                    <use x="150" y="60" width="60" height="60" href="#eq" />
+                    <use x="150" y="60" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c21">
+                    <use x="60" y="150" width="60" height="60" href="#veq" />
+                    <use x="60" y="150" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r31">
+                    <use x="210" y="60" width="60" height="60" href="#eq" />
+                    <use x="210" y="60" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c31">
+                    <use x="60" y="210" width="60" height="60" href="#veq" />
+                    <use x="60" y="210" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r41">
+                    <use x="270" y="60" width="60" height="60" href="#eq" />
+                    <use x="270" y="60" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c41">
+                    <use x="60" y="270" width="60" height="60" href="#veq" />
+                    <use x="60" y="270" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r02">
+                    <use x="30" y="120" width="60" height="60" href="#eq" />
+                    <use x="30" y="120" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c02">
+                    <use x="120" y="30" width="60" height="60" href="#veq" />
+                    <use x="120" y="30" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r12">
+                    <use x="90" y="120" width="60" height="60" href="#eq" />
+                    <use x="90" y="120" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c12">
+                    <use x="120" y="90" width="60" height="60" href="#veq" />
+                    <use x="120" y="90" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r22">
+                    <use x="150" y="120" width="60" height="60" href="#eq" />
+                    <use x="150" y="120" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c22">
+                    <use x="120" y="150" width="60" height="60" href="#veq" />
+                    <use x="120" y="150" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r32">
+                    <use x="210" y="120" width="60" height="60" href="#eq" />
+                    <use x="210" y="120" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c32">
+                    <use x="120" y="210" width="60" height="60" href="#veq" />
+                    <use x="120" y="210" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r42">
+                    <use x="270" y="120" width="60" height="60" href="#eq" />
+                    <use x="270" y="120" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c42">
+                    <use x="120" y="270" width="60" height="60" href="#veq" />
+                    <use x="120" y="270" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r03">
+                    <use x="30" y="180" width="60" height="60" href="#eq" />
+                    <use x="30" y="180" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c03">
+                    <use x="180" y="30" width="60" height="60" href="#veq" />
+                    <use x="180" y="30" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r13">
+                    <use x="90" y="180" width="60" height="60" href="#eq" />
+                    <use x="90" y="180" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c13">
+                    <use x="180" y="90" width="60" height="60" href="#veq" />
+                    <use x="180" y="90" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r23">
+                    <use x="150" y="180" width="60" height="60" href="#eq" />
+                    <use x="150" y="180" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c23">
+                    <use x="180" y="150" width="60" height="60" href="#veq" />
+                    <use x="180" y="150" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r33">
+                    <use x="210" y="180" width="60" height="60" href="#eq" />
+                    <use x="210" y="180" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c33">
+                    <use x="180" y="210" width="60" height="60" href="#veq" />
+                    <use x="180" y="210" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r43">
+                    <use x="270" y="180" width="60" height="60" href="#eq" />
+                    <use x="270" y="180" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c43">
+                    <use x="180" y="270" width="60" height="60" href="#veq" />
+                    <use x="180" y="270" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r04">
+                    <use x="30" y="240" width="60" height="60" href="#eq" />
+                    <use x="30" y="240" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c04">
+                    <use x="240" y="30" width="60" height="60" href="#veq" />
+                    <use x="240" y="30" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r14">
+                    <use x="90" y="240" width="60" height="60" href="#eq" />
+                    <use x="90" y="240" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c14">
+                    <use x="240" y="90" width="60" height="60" href="#veq" />
+                    <use x="240" y="90" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r24">
+                    <use x="150" y="240" width="60" height="60" href="#eq" />
+                    <use x="150" y="240" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c24">
+                    <use x="240" y="150" width="60" height="60" href="#veq" />
+                    <use x="240" y="150" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r34">
+                    <use x="210" y="240" width="60" height="60" href="#eq" />
+                    <use x="210" y="240" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c34">
+                    <use x="240" y="210" width="60" height="60" href="#veq" />
+                    <use x="240" y="210" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r44">
+                    <use x="270" y="240" width="60" height="60" href="#eq" />
+                    <use x="270" y="240" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c44">
+                    <use x="240" y="270" width="60" height="60" href="#veq" />
+                    <use x="240" y="270" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r05">
+                    <use x="30" y="300" width="60" height="60" href="#eq" />
+                    <use x="30" y="300" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c05">
+                    <use x="300" y="30" width="60" height="60" href="#veq" />
+                    <use x="300" y="30" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r15">
+                    <use x="90" y="300" width="60" height="60" href="#eq" />
+                    <use x="90" y="300" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c15">
+                    <use x="300" y="90" width="60" height="60" href="#veq" />
+                    <use x="300" y="90" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r25">
+                    <use x="150" y="300" width="60" height="60" href="#eq" />
+                    <use x="150" y="300" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c25">
+                    <use x="300" y="150" width="60" height="60" href="#veq" />
+                    <use x="300" y="150" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r35">
+                    <use x="210" y="300" width="60" height="60" href="#eq" />
+                    <use x="210" y="300" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c35">
+                    <use x="300" y="210" width="60" height="60" href="#veq" />
+                    <use x="300" y="210" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="r45">
+                    <use x="270" y="300" width="60" height="60" href="#eq" />
+                    <use x="270" y="300" width="60" height="60" href="#cross" />
+                </g>
+                <g class="sg" data-id="c45">
+                    <use x="300" y="270" width="60" height="60" href="#veq" />
+                    <use x="300" y="270" width="60" height="60" href="#cross" />
+                </g>
+            </g>
+            <!-- end board -->
         </svg>
 
         <div class="puzzle-selector">
@@ -68,7 +543,8 @@
     </div>
     <script>
         const script = document.createElement('script');
-        script.src = `main.js?v=${Math.random()}`;
+        script.type = 'module';
+        script.src = `main.mjs?v=${Math.random()}`;
         document.body.appendChild(script);
     </script>
 </body>
