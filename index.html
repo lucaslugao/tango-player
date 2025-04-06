@@ -25,16 +25,17 @@
     <link rel="manifest" href="manifest.json">
 </head>
 
-<body data-confetti="true">
+<body data-confetti="true" data-status="playing">
     <div class="game">
         <p class="title">Tango Player</p>
-        <p class="myname">by @lucaslugao</p>
+        <p class="myname">by <a href="https://github.com/lucaslugao">@lucaslugao</a></p>
         <p class="notice">Solved!</p>
         <div class="controls">
             <button class="button undo">Undo</button>
             <button class="button clear">Clear</button>
             <button class="button redo">Redo</button>
             <button class="button confetti">Confetti</button>
+            <button class="button hint">Hints</button>
         </div>
         <svg version="1.1" width="362" height="362" viewBox="-1 -1 362 362" data-cell-size="60">
             <style>
@@ -46,6 +47,8 @@
                     --moon-stroke: #4d75ad;
                     --symbol-color: #4c658c;
                     --symbolbg-color: white;
+                    --cell-violation: #feeded;
+                    --original-violation: #f1dada;
                 }
 
                 .cell {
@@ -76,6 +79,12 @@
 
                 .sg[data-ok="1"][data-value="1"] use[href="#cross"] {
                     visibility: visible;
+                }
+                .cg[data-violation][data-original="0"] .cell {
+                    fill: var(--cell-violation)  !important;
+                }
+                .cg[data-violation][data-original="1"] .cell {
+                    fill: var(--original-violation) !important;
                 }
             </style>
             <defs>

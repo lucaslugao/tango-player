@@ -8,10 +8,16 @@ body {
     height: 100svh;
 }
 
+a:visited {
+    color: #575757;
+}
+
+a {
+    color: #253f6e;
+}
+
 body[data-status="solved"] {
     background-color: #d7e6ff;
-    position: relative;
-    overflow: hidden;
 }
 
 button {
@@ -20,11 +26,19 @@ button {
 }
 
 body[data-confetti="true"] button.confetti::after {
-    content: " On";
+    content: " ☑";
 }
 
 body[data-confetti="false"] button.confetti::after {
-    content: " Off";
+    content: " ☐";
+}
+
+body[data-hint="true"] button.hint::after {
+    content: " ☑";
+}
+
+body[data-hint="false"] button.hint::after {
+    content: " ☐";
 }
 
 .title {
@@ -34,7 +48,7 @@ body[data-confetti="false"] button.confetti::after {
 }
 
 .myname {
-    font-size: 1.5em;
+    font-size: 1.2em;
     margin-top: 0;
     color: #000;
 }
@@ -42,12 +56,17 @@ body[data-confetti="false"] button.confetti::after {
 .notice {
     opacity: 0;
     margin: 0;
-    transition: opacity 0.3s ease;
+    transition: transform 0.3s ease;
+    font-weight: bold;
+    font-size: 1.5em;
+    transform: scaleY(0);
 }
 
 body[data-status="solved"] .notice {
     opacity: 1;
+    transform: scaleY(1);
 }
+
 
 .game {
     user-select: none;

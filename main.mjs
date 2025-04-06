@@ -136,6 +136,7 @@ class Tango {
         for (let x = 0; x < 6; x++) {
             const [v, ok] = row.get(x);
             if (ok) this.cols[x].set(y, v);
+            else this.cols[x].delete(y);
         }
     }
 
@@ -298,6 +299,17 @@ class Tango {
     }
 
     /**
+     * Returns the ternary value at a specific position in the Tango board
+     * @param {number} x - The x-coordinate (0-5)
+     * @param {number} y - The y-coordinate (0-5)
+     * @returns {number} The ternary value at the specified position
+     */
+    ternary(x, y) {
+        const [v, ok] = this.get(x, y);
+        return ok ? v : -1;
+    }
+
+    /**
      * Returns true if the value at a specific position in the Tango board is set
      * @param {number} x - The x-coordinate (0-5)
      * @param {number} y - The y-coordinate (0-5)
@@ -307,7 +319,12 @@ class Tango {
         return this.rows[y].has(x);
     }
 
-
+    /**
+     * Checks if a line satisfies a constraint
+     * @param {MaskedBitset} line - A valid line to check
+     * @param {MaskedBitset} constr - The constraint
+     * @returns {boolean} True if the line satisfies the constraint, false otherwise
+     */
     checkConstraint(line, constr) {
         if (constr.mask === 0) {
             return true;
@@ -333,21 +350,16 @@ class Tango {
         return count;
     }
 
-    checkValidity() {
+    isValid() {
         for (let i = 0; i < 6; i++) {
             if (this.countCompletions(this.rows[i], this.rowsConstr[i]) === 0) {
-                return ["row", i];
+                return false;
             }
             if (this.countCompletions(this.cols[i], this.colsConstr[i]) === 0) {
-                return ["col", i];
+                return false;
             }
         }
-        return [null, null];
-    }
-
-    isValid() {
-        const [type, index] = this.checkValidity();
-        return type === null;
+        return true;
     }
 
     isSolved() {
@@ -357,6 +369,93 @@ class Tango {
             }
         }
         return this.isValid();
+    }
+
+
+    ruleViolations() {
+        const violations = [];
+
+        const invalidTriples = [
+            0b000111,
+            0b001110,
+            0b011100,
+            0b111000,
+        ];
+
+        function checkTriple(line, i, direction) {
+            for (let j = 0; j < 4; j++) {
+                if ((line & invalidTriples[j]) !== invalidTriples[j]) continue;
+                if (direction === "col") {
+                    violations.push({ type: "triple", loc: [[i, j], [i, j + 1], [i, j + 2]] });
+                } else {
+                    violations.push({ type: "triple", loc: [[j, i], [j + 1, i], [j + 2, i]] });
+                }
+            }
+        }
+
+        function checkConstr(type, line, k, direction, i, j) {
+            const [iv, iok] = line.get(i);
+            const [jv, jok] = line.get(j);
+            if (iok && jok && (iv === jv) !== (type === "eq")) {
+                if (direction === "col") {
+                    violations.push({ type: type, loc: [[k, i], [k, j]] });
+                } else {
+                    violations.push({ type: type, loc: [[i, k], [j, k]] });
+                }
+            }
+        }
+        function checkMaxCount(line, i, direction) {
+            const setValues = [line & 1, (line >> 1) & 1, (line >> 2) & 1, (line >> 3) & 1, (line >> 4) & 1, (line >> 5) & 1];
+            const count = setValues.filter(v => v === 1).length;
+            if (count > 3) {
+                if (direction === "col") {
+                    violations.push({
+                        type: "count",
+                        loc: Array.from({ length: 6 }, (_, j) => [i, j]).filter((_, i) => setValues[i])
+                    });
+                } else {
+                    violations.push({
+                        type: "count",
+                        loc: Array.from({ length: 6 }, (_, j) => [j, i]).filter((_, i) => setValues[i])
+                    });
+                }
+            }
+        }
+
+        for (let i = 0; i < 6; i++) {
+            const moonRow = (~this.rows[i].value) & this.rows[i].mask;
+            const moonCol = (~this.cols[i].value) & this.cols[i].mask;
+            const sunRow = this.rows[i].value & this.rows[i].mask;
+            const sunCol = this.cols[i].value & this.cols[i].mask;
+
+            checkTriple(moonRow, i, "row");
+            checkTriple(moonCol, i, "col");
+            checkTriple(sunRow, i, "row");
+            checkTriple(sunCol, i, "col");
+
+            checkMaxCount(moonRow, i, "row");
+            checkMaxCount(moonCol, i, "col");
+            checkMaxCount(sunRow, i, "row");
+            checkMaxCount(sunCol, i, "col");
+        }
+
+        for (let i = 0; i < 6; i++) {
+            for (let j = 0; j < 5; j++) {
+                const [rv, rok] = this.rowsConstr[i].get(j);
+                if (rok) {
+                    if (rv == 0) checkConstr("eq", this.rows[i], i, "row", j, j + 1);
+                    else checkConstr("neq", this.rows[i], i, "row", j, j + 1);
+                }
+                const [cv, cok] = this.colsConstr[i].get(j);
+                if (cok) {
+                    if (cv == 0) checkConstr("eq", this.cols[i], i, "col", j, j + 1);
+                    else checkConstr("neq", this.cols[i], i, "col", j, j + 1);
+                }
+
+            }
+        }
+
+        return violations;
     }
 
     /**
@@ -659,8 +758,24 @@ export class Renderer {
                 status: "playing",
             });
         }
-    }
 
+        this.HintViolations();
+    }
+    HintViolations() {
+        if (document.body.dataset.hint === "false") return;
+        const violations = this.tango.ruleViolations();
+        this.ClearViolations();
+        for (const violation of violations) {
+            for (const [x, y] of violation.loc) {
+                this.cellRefs[x + y * 6].dataset.violation = violation.type;
+            }
+        }
+    }
+    ClearViolations() {
+        for (let i = 0; i < 36; i++) {
+            delete this.cellRefs[i].dataset.violation;
+        }
+    }
     renderStatic() {
         for (let y = 0; y < 6; y++) {
             for (let x = 0; x < 6; x++) {
@@ -717,10 +832,10 @@ export class Renderer {
 
 /** @type {StatePropTags} */
 const StatePropTags = {
-    local: new Set(["confetti"]),
+    local: new Set(["confetti", "hint"]),
     url: new Set(["puzzle", "current", "status"]),
     session: new Set(["history", "future"]),
-    body: new Set(["confetti", "status"]),
+    body: new Set(["confetti", "hint", "status"]),
     target: new Set(["puzzle"]),
 }
 
@@ -732,6 +847,7 @@ class StateManager {
         /** @type {State} */
         this.state = {
             confetti: true,
+            hint: true,
             status: "playing",
             history: [],
             future: [],
@@ -842,6 +958,7 @@ class StateManager {
 if (typeof window !== "undefined") {
     const svg = document.querySelector('svg');
     const confettiButton = document.querySelector('.button.confetti');
+    const hintButton = document.querySelector('.button.hint');
     const clearButton = document.querySelector('.button.clear');
     const undoButton = document.querySelector('.button.undo');
     const redoButton = document.querySelector('.button.redo');
@@ -884,6 +1001,15 @@ if (typeof window !== "undefined") {
         manager.Update({
             confetti: !manager.state.confetti,
         });
+    });
+
+    // Bind Hint Button
+    hintButton.addEventListener('click', () => {
+        manager.Update({
+            hint: !manager.state.hint,
+        });
+        renderer.ClearViolations();
+        renderer.Hint();
     });
 
     // Clear the board
