@@ -549,6 +549,16 @@
             <button class="button load">Load</button>
             <button class="button random">Random</button>
         </div>
+        <button class="button open-rules" onclick="rulesDialog.showModal()">Rules?</button>
+        <dialog id="rulesDialog" onclick="if(event.target === this) this.close()">
+            <h2>Rules</h2>
+            <ul>
+                <li>Fill every grid cell with either a sun or a moon.</li>
+                <li>No sequence of three identical symbols (three suns or three moons) is allowed horizontally or vertically.</li>
+                <li>Every row and every column must have the same number of suns as moons.</li>
+            </ul>
+            <button class="button close-rules" onclick="rulesDialog.close()">Close</button>
+        </dialog>
     </div>
     <script>
         const script = document.createElement('script');

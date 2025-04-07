@@ -93,3 +93,33 @@ svg {
 .puzzle-selector {
     margin-top: 10px;
 }
+
+#rulesDialog {
+    padding: 10px 20px;
+    border: 2px solid #eff0f3;
+
+    position: absolute;
+    width: 300px;
+
+    background-color: #fff;
+
+
+    li {
+        text-align: justify;
+        margin-bottom: 10px;
+    }
+
+    &::backdrop {
+        background-color: #2b2b2bc8;
+    }
+
+    button {
+        margin: 10px;
+    }
+}
+
+.button.open-rules {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
