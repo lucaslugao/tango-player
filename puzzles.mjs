@@ -17,6 +17,18 @@ const puzzleSets = [
         ],
     ],
     [
+        "Three Piece",
+        [
+            ["1", "ggAACAIQAAAAAAAAgFAAAgAAAAAAABAA"],
+            ["2", "AAEAAIBhAAAAAAAEAAAAAgAAQAAAgBAA"],
+            ["3", "gAAIAAAgAAAAAAAEAAAAAgAIAAAAABAA"],
+            ["4", "ioIgAAAAAAAAAAAAAAAAAgAIAAAAAQAA"],
+            ["5", "ggBBQQAAAAAAAAAAABAAAkAIAAAABAAA"],
+            ["6", "ACAIEAQAAAAQAAAAAFIAAAAAQEIAAAAA"],
+            ["7", "AABJAAIAAAAAAAAAAAgAAgAAAAAAABAQ"],
+        ]
+    ],
+    [
         "Linkedin",
         [
             ["164", "AACAAASiAAWqQAABAggAAAAAAAAAAAAA"],
