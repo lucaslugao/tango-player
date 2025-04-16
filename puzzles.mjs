@@ -251,7 +251,7 @@ function updateSelected() {
     if (selectedOption) {
         selectedOption.innerText = selectedOption.innerText.split("|")[0];
     }
-    newSelected.innerText = newSelected.innerText + " | playing";
+    newSelected.innerText = `${newSelected.innerText} | playing`;
     selectedOption = newSelected;
 
     document.title = `Tango Player | ${selectedOption.innerText.split("|")[0]}`;

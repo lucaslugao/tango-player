@@ -16,8 +16,6 @@
     <meta name="description"
         content="Web page to play Tango, a 6x6 single player board game. Puzzles are passed as URL parameters.">
     <title>Tango Player</title>
-    <script rel="preconnect" src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"
-        async></script>
     <link rel="icon"
         href="data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8' standalone='no'%3F%3E%3Csvg width='16px' height='16px' viewBox='-0.1875 -0.1875 1.375 1.375' version='1.1' id='svg1' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3E%3Ccircle fill='%23ffb31e' stroke='black' stroke-width='0.05' cx='0.5' cy='0.5' r='0.5' id='circle1' /%3E%3Cpath fill='%2382afed' stroke='black' stroke-width='0.05' d='m 0.7056 0.0444 a 0.5 0.5 90 0 1 0.0444 0.2056 a 0.5 0.5 90 0 1 -0.5 0.5 a 0.5 0.5 90 0 1 -0.2056 -0.0444 a 0.5 0.5 90 0 0 0.4556 0.2944 a 0.5 0.5 90 0 0 0.5 -0.5 a 0.5 0.5 90 0 0 -0.2944 -0.4556 z' style='stroke-linejoin:round' /%3E%3C/svg%3E">
 
@@ -80,9 +78,11 @@
                 .sg[data-ok="1"][data-value="1"] use[href="#cross"] {
                     visibility: visible;
                 }
+
                 .cg[data-violation][data-original="0"] .cell {
-                    fill: var(--cell-violation)  !important;
+                    fill: var(--cell-violation) !important;
                 }
+
                 .cg[data-violation][data-original="1"] .cell {
                     fill: var(--original-violation) !important;
                 }
@@ -554,7 +554,8 @@
             <h2>Rules</h2>
             <ul>
                 <li>Fill every grid cell with either a sun or a moon.</li>
-                <li>No sequence of three identical symbols (three suns or three moons) is allowed horizontally or vertically.</li>
+                <li>No sequence of three identical symbols (three suns or three moons) is allowed horizontally or
+                    vertically.</li>
                 <li>Every row and every column must have the same number of suns as moons.</li>
             </ul>
             <button class="button close-rules" onclick="rulesDialog.close()">Close</button>
@@ -566,6 +567,8 @@
         script.src = `main.mjs?v=${Math.random()}`;
         document.body.appendChild(script);
     </script>
+    <script rel="preconnect" src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"
+        async></script>
 </body>
 
 </html>
