@@ -281,3 +281,9 @@ randomButton.addEventListener("click", () => {
         detail: allPuzzles[Math.floor(Math.random() * allPuzzles.length)],
     }));
 });
+
+if (gameElement.dataset.puzzle === undefined || gameElement.dataset.puzzle === "") {
+    gameElement.dispatchEvent(new CustomEvent("updatepuzzle", {
+        detail: allPuzzles[Math.floor(Math.random() * allPuzzles.length)],
+    }));
+}

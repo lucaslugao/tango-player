@@ -1,125 +1,183 @@
 body {
-    font-family: monospace;
-    font-style: normal;
-    text-align: center;
-    margin: 0;
-    -webkit-tap-highlight-color: transparent;
-    transition: background-color 0.3s ease;
-    height: 100svh;
+	--background-color: #fff;
+	--link-color: #253f6e;
+	--secondary-text-color: #575757;
+	--winning-background-color: #d7e6ff;
+    --text-color: #000;
+
+	background-color: var(--background-color);
+	font-family: monospace;
+	font-style: normal;
+	text-align: center;
+	margin: 0;
+	-webkit-tap-highlight-color: transparent;
+	height: 100svh;
+	color: var(--text-color);
+
+    visibility: hidden; opacity: 0;
 }
 
-a:visited {
-    color: #575757;
+body[data-theme] {
+    /* Prevent FART (https://css-tricks.com/flash-of-inaccurate-color-theme-fart/) */
+    visibility: visible; opacity: 1;
 }
 
-a {
-    color: #253f6e;
-}
-
-body[data-status="solved"] {
-    background-color: #d7e6ff;
+body[data-theme="dark"] {
+	--background-color: #000;
+	--link-color: #8ab4f8;
+	--text-color: #fff;
+	--secondary-text-color: #797979;
+	--winning-background-color: #26385c;
 }
 
 button {
-    font-family: monospace;
-    padding: 2px 10px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--secondary-text-color);
+    height: 20px;
+    display: flex;
+    align-items: center;
+}
+
+a:visited {
+	color: var(--secondary-text-color);
+}
+
+a {
+	color: var(--link-color);
+}
+
+body[data-status="solved"] {
+	background-color: var(--winning-background-color);
+}
+
+button {
+	font-family: monospace;
+	padding: 2px 10px;
 }
 
 body[data-confetti="true"] button.confetti::after {
-    content: " ☑";
+	content: " ☑";
 }
 
 body[data-confetti="false"] button.confetti::after {
-    content: " ☐";
+	content: " ☐";
 }
 
 body[data-hint="true"] button.hint::after {
-    content: " ☑";
+	content: " ☑";
 }
 
 body[data-hint="false"] button.hint::after {
-    content: " ☐";
+	content: " ☐";
 }
 
 .title {
-    font-size: 2.5em;
-    margin: 0;
-    color: #000;
+	font-size: 2.5em;
+	margin: 0;
+	color: var(--text-color);
 }
 
 .myname {
-    font-size: 1.2em;
-    margin-top: 0;
-    color: #000;
+	font-size: 1.2em;
+	margin-top: 0;
+	color: var(--text-color);
 }
 
 .notice {
-    opacity: 0;
-    margin: 0;
-    transition: transform 0.3s ease;
-    font-weight: bold;
-    font-size: 1.5em;
-    transform: scaleY(0);
+	opacity: 0;
+	margin: 0;
+	transition: transform 0.3s ease;
+	font-weight: bold;
+	font-size: 1.5em;
+	transform: scaleY(0);
 }
 
 body[data-status="solved"] .notice {
-    opacity: 1;
-    transform: scaleY(1);
+	opacity: 1;
+	transform: scaleY(1);
 }
 
-
 .game {
-    user-select: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100svh;
+	user-select: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	height: 100svh;
 }
 
 svg {
-    touch-action: manipulation;
-    user-select: none;
+	touch-action: manipulation;
+	user-select: none;
 }
 
 .controls {
-    margin: 10px 0px;
-    display: flex;
-    justify-content: space-around;
-    min-width: 362px;
+	margin: 10px 0px;
+	display: flex;
+	justify-content: space-around;
+	min-width: 362px;
 }
 
-
 .puzzle-selector {
-    margin-top: 10px;
+	margin-top: 10px;
+	display: flex;
+	justify-content: space-around;
+	min-width: 362px;
+    align-items: center;
 }
 
 #rulesDialog {
-    padding: 10px 20px;
-    border: 2px solid #eff0f3;
+	padding: 10px 20px;
+	border: 2px solid #eff0f3;
 
-    position: absolute;
-    width: 300px;
+	position: absolute;
+	width: 300px;
 
-    background-color: #fff;
+	background-color: #fff;
 
+	color: #000;
 
-    li {
-        text-align: justify;
-        margin-bottom: 10px;
-    }
+	li {
+		text-align: justify;
+		margin-bottom: 10px;
+	}
 
-    &::backdrop {
-        background-color: #2b2b2bc8;
-    }
+	&::backdrop {
+		background-color: #2b2b2bc8;
+	}
 
-    button {
-        margin: 10px;
-    }
+	button {
+		margin: 10px;
+	}
+}
+
+select {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--secondary-text-color);
+    font-family: monospace;
+    
+    max-width: 175px;
+    padding: 1px 10px;
+    height: 20px;
 }
 
 .button.open-rules {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+}
+
+.button.theme {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+
+body[data-theme="dark"] .button.theme::before {
+    content: "Dark";
+}
+body[data-theme="light"] .button.theme::before {
+    content: "Light";
 }

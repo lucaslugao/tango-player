@@ -163,7 +163,7 @@ class Tango {
             for (let x = 0; x < 6; x++) {
                 const [v, ok] = this.get(x, y);
                 if (ok) {
-                    res += v == 0 ? "🔵" : "🟡";
+                    res += v === 0 ? "🔵" : "🟡";
                 } else {
                     res += "⬛";
                 }
@@ -188,15 +188,14 @@ class Tango {
             return true;
         } catch (e) {
             couldParse = false;
-        } finally {
-            if (!couldParse) {
-                this.rows = Array(6).fill(null).map(() => new MaskedBitset());
-                this.cols = Array(6).fill(null).map(() => new MaskedBitset());
-                this.rowsConstr = Array(6).fill(null).map(() => new MaskedBitset());
-                this.colsConstr = Array(6).fill(null).map(() => new MaskedBitset());
-            }
-            return couldParse;
         }
+        if (!couldParse) {
+            this.rows = Array(6).fill(null).map(() => new MaskedBitset());
+            this.cols = Array(6).fill(null).map(() => new MaskedBitset());
+            this.rowsConstr = Array(6).fill(null).map(() => new MaskedBitset());
+            this.colsConstr = Array(6).fill(null).map(() => new MaskedBitset());
+        }
+        return couldParse;
     }
 
     loadPieces(puzzle) {
@@ -210,15 +209,13 @@ class Tango {
             return true;
         } catch (e) {
             couldParse = false;
-        } finally {
-            if (!couldParse) {
-                this.rows = Array(6).fill(null).map(() => new MaskedBitset());
-                this.cols = Array(6).fill(null).map(() => new MaskedBitset());
-            }
-            return couldParse;
         }
+        if (!couldParse) {
+            this.rows = Array(6).fill(null).map(() => new MaskedBitset());
+            this.cols = Array(6).fill(null).map(() => new MaskedBitset());
+        }
+        return couldParse;
     }
-
     /**
      * Creates a Tango instance from a puzzle string
      * @param {string} puzzle - The puzzle string
@@ -443,12 +440,12 @@ class Tango {
             for (let j = 0; j < 5; j++) {
                 const [rv, rok] = this.rowsConstr[i].get(j);
                 if (rok) {
-                    if (rv == 0) checkConstr("eq", this.rows[i], i, "row", j, j + 1);
+                    if (rv === 0) checkConstr("eq", this.rows[i], i, "row", j, j + 1);
                     else checkConstr("neq", this.rows[i], i, "row", j, j + 1);
                 }
                 const [cv, cok] = this.colsConstr[i].get(j);
                 if (cok) {
-                    if (cv == 0) checkConstr("eq", this.cols[i], i, "col", j, j + 1);
+                    if (cv === 0) checkConstr("eq", this.cols[i], i, "col", j, j + 1);
                     else checkConstr("neq", this.cols[i], i, "col", j, j + 1);
                 }
 
@@ -475,7 +472,7 @@ class Tango {
 
                 const [cv, cok] = current.get(x, y);
                 if (!cok) return false; // current has no value but base does
-                if (v != cv) return false; // current has a value but it's different from base
+                if (v !== cv) return false; // current has a value but it's different from base
             }
         }
         return true;
@@ -505,9 +502,8 @@ class XMLNode {
     Render(indent = "") {
         if (typeof window === 'undefined') {
             return this.renderUsingString(indent);
-        } else {
-            return this.renderUsingDOM().outerHTML;
         }
+        return this.renderUsingDOM().outerHTML;
     }
 
     static escape(str) {
@@ -518,14 +514,14 @@ class XMLNode {
         const propsString = Object.entries(this.props)
             .map(([k, v]) => `${XMLNode.escape(k)}="${XMLNode.escape(v)}"`)
             .join(" ");
-        let res = `${indent}<${this.tag}${propsString ? " " + propsString : ""}`;
+        let res = `${indent}<${this.tag}${propsString ? ` ${propsString}` : ""}`;
         if (this.children.length === 0) {
-            res += ` />`;
+            res += " />";
             return res;
         }
-        res += `>`;
+        res += ">";
         for (const child of this.children) {
-            res += `\n${child.renderUsingString(indent + "    ")}`;
+            res += `\n${child.renderUsingString(`${indent}    `)}`;
         }
         res += `\n${indent}</${this.tag}>`;
         return res;
@@ -811,12 +807,22 @@ export class Renderer {
         }
     }
 }
+
+/**
+ * @enum {string}
+ */
+const Theme = {
+    LIGHT: 'light',
+    DARK: 'dark',
+};
+
 /**
  * @typedef {Object} State
  * @property {boolean} confetti - Whether confetti is enabled
  * @property {string} status - The hint of the game
  * @property {string} current - The current state of the game
  * @property {string} puzzle - The original puzzle being played
+ * @property {Theme} theme - The theme of the game
  * @property {string[]} history - The history of the game
  * @property {string[]} future - The future of the game
  */
@@ -832,10 +838,10 @@ export class Renderer {
 
 /** @type {StatePropTags} */
 const StatePropTags = {
-    local: new Set(["confetti", "hint"]),
+    local: new Set(["confetti", "hint", "theme"]),
     url: new Set(["puzzle", "current", "status"]),
     session: new Set(["history", "future"]),
-    body: new Set(["confetti", "hint", "status"]),
+    body: new Set(["confetti", "hint", "status", "theme"]),
     target: new Set(["puzzle"]),
 }
 
@@ -851,6 +857,7 @@ class StateManager {
             status: "playing",
             history: [],
             future: [],
+            theme: Theme.DARK,
         }
         this.target = target;
     }
@@ -902,6 +909,7 @@ class StateManager {
         if ("puzzle" in update) {
             this.target.dispatchEvent(new CustomEvent("puzzlechange"));
         }
+        console.log("New state", this.state);
     }
     /**
      * Splits the state into config and game state
@@ -955,13 +963,15 @@ class StateManager {
 
 }
 
-if (typeof window !== "undefined") {
+function webMain() {
+
     const svg = document.querySelector('svg');
     const confettiButton = document.querySelector('.button.confetti');
     const hintButton = document.querySelector('.button.hint');
     const clearButton = document.querySelector('.button.clear');
     const undoButton = document.querySelector('.button.undo');
     const redoButton = document.querySelector('.button.redo');
+    const themeButton = document.querySelector('.button.theme');
 
     const manager = new StateManager(svg);
     manager.Update(manager.loadState());
@@ -973,7 +983,7 @@ if (typeof window !== "undefined") {
         console.log("❌ Could not parse base game from state, defaulting to example");
         manager.Update({
             status: "playing",
-            puzzle: "gghIAEIQkhRFAAgBAAAAAAAAAAAAAABA",
+            puzzle: "",
         });
         tango.Load(manager.state.puzzle);
     }
@@ -1079,5 +1089,15 @@ if (typeof window !== "undefined") {
         renderer.Hint();
     });
 
+    themeButton.addEventListener('click', () => {
+        const newTheme = manager.state.theme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
+        manager.Update({
+            theme: newTheme,
+        });
+    });
+
+
     import("./puzzles.mjs");
 }
+
+if (typeof window !== "undefined") webMain();

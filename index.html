@@ -38,20 +38,30 @@
         <svg version="1.1" width="362" height="362" viewBox="-1 -1 362 362" data-cell-size="60">
             <style>
                 :root {
-                    --cell-color: #eff0f3;
+                    --cell-color: #fff;
+                    --secondary-cell-color: #eff0f3;
                     --sun-color: #ffb31e;
                     --sun-stroke: #a37415;
                     --moon-color: #82afed;
                     --moon-stroke: #4d75ad;
                     --symbol-color: #4c658c;
-                    --symbolbg-color: white;
                     --cell-violation: #feeded;
                     --original-violation: #f1dada;
                 }
 
+                body[data-theme="dark"] {
+                    --cell-color: #1b1b1b;
+                    --secondary-cell-color: #4a4a4a;
+                    --symbol-color: #bbc7da;
+                    --sun-stroke: #ffd47e;
+                    --moon-stroke: #afc5e3;
+                    --cell-violation: #2f0e0e;
+                    --original-violation: #4d2a2a;
+                }
+
                 .cell {
-                    fill: white;
-                    stroke: var(--cell-color);
+                    fill: var(--cell-color);
+                    stroke: var(--secondary-cell-color);
                 }
 
                 use {
@@ -59,7 +69,7 @@
                 }
 
                 .cg[data-original="1"] .cell {
-                    fill: var(--cell-color);
+                    fill: var(--secondary-cell-color);
                 }
 
                 .cg[data-ok="1"][data-value="1"] use[href="#sun"] {
@@ -98,19 +108,20 @@
                         stroke-width="2" fill="var(--moon-color)" stroke="var(--moon-stroke)" />
                 </symbol>
                 <symbol id="eq" width="60" height="60" viewBox="0 0 60 60">
-                    <path fill="var(--symbol-color)" stroke-linecap="round" paint-order="stroke" stroke="white"
-                        stroke-width="2" d="m 25.8 27.2 l 8.4 0 l 0 1.4 l -8.4 0 z m 0 4.2 l 8.4 0 l 0 1.4 l -8.4 0 z">
+                    <path fill="var(--symbol-color)" stroke-linecap="round" paint-order="stroke"
+                        stroke="var(--cell-color)" stroke-width="2"
+                        d="m 25.8 27.2 l 8.4 0 l 0 1.4 l -8.4 0 z m 0 4.2 l 8.4 0 l 0 1.4 l -8.4 0 z">
                     </path>
                 </symbol>
                 <symbol id="veq" width="60" height="60" viewBox="0 0 60 60">
-                    <path fill="var(--symbol-color)" stroke-linecap="round" paint-order="stroke" stroke="white"
-                        stroke-width="2"
+                    <path fill="var(--symbol-color)" stroke-linecap="round" paint-order="stroke"
+                        stroke="var(--cell-color)" stroke-width="2"
                         d="m 32.8 25.8 l 0 8.4 l -1.4 0 l -0 -8.4 z m -4.2 0 l 0 8.4 l -1.4 0 l -0 -8.4 z">
                     </path>
                 </symbol>
                 <symbol id="cross" width="60" height="60" viewBox="0 0 60 60">
-                    <path fill="var(--symbol-color)" stroke-linecap="round" paint-order="stroke" stroke="white"
-                        stroke-width="2"
+                    <path fill="var(--symbol-color)" stroke-linecap="round" paint-order="stroke"
+                        stroke="var(--cell-color)" stroke-width="2"
                         d="m 27.5248 26.535 l 5.9402 5.9402 l -0.9898 0.9898 l -5.9402 -5.9402 z m -0.9898 5.9402 l 5.9402 -5.9402 l 0.9898 0.9898 l -5.9402 5.9402 z">
                     </path>
                 </symbol>
@@ -549,6 +560,8 @@
             <button class="button load">Load</button>
             <button class="button random">Random</button>
         </div>
+        <button class="button theme">&nbsp;theme</button>
+
         <button class="button open-rules" onclick="rulesDialog.showModal()">Rules?</button>
         <dialog id="rulesDialog" onclick="if(event.target === this) this.close()">
             <h2>Rules</h2>
