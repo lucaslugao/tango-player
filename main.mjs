@@ -909,7 +909,6 @@ class StateManager {
         if ("puzzle" in update) {
             this.target.dispatchEvent(new CustomEvent("puzzlechange"));
         }
-        console.log("New state", this.state);
     }
     /**
      * Splits the state into config and game state
