@@ -957,7 +957,7 @@ class StateManager {
         } catch {
             urlState = {};
         }
-        return { ...sessionState, ...localState, ...urlState };
+        return { ...this.state, ...sessionState, ...localState, ...urlState };
     }
 
 }
